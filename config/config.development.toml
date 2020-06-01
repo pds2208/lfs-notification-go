@@ -1,0 +1,9 @@
+
+loggingTopic = "lfs-logging"
+progressTopic = "lfs-progress"
+auditTopic = "lfs-audit"
+
+# messaging server address
+brokers = [
+    "localhost:9092"
+]
