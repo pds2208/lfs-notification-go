@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/ONSDigital/lfs-notification-go/messaging/aws"
 	"github.com/ONSDigital/lfs-notification-go/messaging/kafka"
 	"github.com/ONSDigital/lfs-notification-go/types"
 	"github.com/rs/zerolog/log"
@@ -30,6 +31,29 @@ func GetDefaultMessagingImpl(topic string) (MessageService, error) {
 	}
 
 	cachedConnection = &kafka.Connection{}
+
+	if err := cachedConnection.Connect(topic); err != nil {
+		log.Info().
+			Err(err).
+			Msg("Cannot connect to messaging service. Is it running?")
+		cachedConnection = nil
+		return nil, fmt.Errorf("cannot connect to messaging service")
+	}
+
+	return cachedConnection, nil
+}
+
+func GetSNSMessagingImpl(topic string) (MessageService, error) {
+	connectionMux.Lock()
+	defer connectionMux.Unlock()
+
+	if cachedConnection != nil {
+		log.Info().
+			Msg("Returning cached messaging service")
+		return cachedConnection, nil
+	}
+
+	cachedConnection = &aws.Connection{}
 
 	if err := cachedConnection.Connect(topic); err != nil {
 		log.Info().

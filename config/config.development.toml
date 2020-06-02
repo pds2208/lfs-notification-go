@@ -7,3 +7,6 @@ auditTopic = "lfs-audit"
 brokers = [
     "localhost:9092"
 ]
+
+[aws]
+    region="eu-west-2"
